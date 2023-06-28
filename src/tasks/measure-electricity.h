@@ -16,7 +16,8 @@ extern DisplayValues gDisplayValues;
 extern Configmodule configmodule; 
 extern Logs Logging;
 
-extern SemaphoreHandle_t xSemaphore;
+extern SemaphoreHandle_t xSemaphoreDimmer;
+extern SemaphoreHandle_t xSemaphoreDisplay;
 
 #ifndef LIGHT_FIRMWARE
       extern HA device_routeur; 
@@ -171,9 +172,10 @@ void measureElectricity(void * parameter)
       long end = millis();
 
       // Release semaphore
-      xSemaphoreGive(xSemaphore);
+      xSemaphoreGive(xSemaphoreDimmer);
+      xSemaphoreGive(xSemaphoreDisplay);
 
-      // Schedule the task to run again in 1 second (while
+      // Schedule the task to run again in 2 second (while
       // taking into account how long measurement took) ///&& configmodule.pilote
       if (configmodule.enphase_present) {
             vTaskDelay(pdMS_TO_TICKS(4000));

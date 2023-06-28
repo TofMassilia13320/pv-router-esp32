@@ -23,7 +23,7 @@ extern TFT_eSPI display;
 extern DisplayValues gDisplayValues;
 extern Configmodule configmodule;
 
-extern SemaphoreHandle_t xSemaphore;
+extern SemaphoreHandle_t xSemaphoreDisplay;
 
 #define TFT_PIN 4
 
@@ -36,8 +36,14 @@ void updateDisplay(void* parameter) {
      if ( gDisplayValues.option == 0 && digitalRead(TFT_PIN)==HIGH){
       call_display();
       }
-      // Wait for semaphore with 5s timeout
-      xSemaphoreTake(xSemaphore, pdMS_TO_TICKS(5000));
+      // Wait for semaphore or sleep for 4 seconds, then update display again!
+      if (xSemaphoreDisplay == NULL) {
+        Serial.println("=>SEMAPHORE UPDATE DISPLAY NULL");
+        vTaskDelay(pdMS_TO_TICKS(4000));
+      }
+      else {
+        xSemaphoreTake(xSemaphoreDisplay, pdMS_TO_TICKS(4000));
+      }
   } // for
   vTaskDelete(NULL); //task destructor in case task jumps the stack
 } // updateDisplay

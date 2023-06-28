@@ -110,7 +110,8 @@ NTPClient timeClient(ntpUDP, NTP_SERVER, NTP_OFFSET_SECONDS, NTP_UPDATE_INTERVAL
 unsigned short measurements[LOCAL_MEASUREMENTS];
 unsigned char measureIndex = 0;
 
-SemaphoreHandle_t xSemaphore = NULL;
+SemaphoreHandle_t xSemaphoreDimmer = NULL;
+SemaphoreHandle_t xSemaphoreDisplay = NULL;
 
 //***********************************
 //************* Dallas
@@ -311,7 +312,11 @@ Dimmer_setup();
   gDisplayValues.dimmer = 0;
 
   // Create mutex 
-  xSemaphore = xSemaphoreCreateBinary();
+  xSemaphoreDimmer  = xSemaphoreCreateBinary();
+  xSemaphoreDisplay = xSemaphoreCreateBinary();
+  if (xSemaphoreDimmer  == NULL) {logging.init += loguptime(); logging.init += "Insufficient heap available... Semaphore Dimmer not created!!\r\n";}
+  if (xSemaphoreDisplay == NULL) {logging.init += loguptime(); logging.init += "Insufficient heap available... Semaphore Display not created!!\r\n";}
+
 
 #if WIFI_ACTIVE == true
   #if WEBSSERVER == true

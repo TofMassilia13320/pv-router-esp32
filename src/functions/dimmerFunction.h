@@ -70,6 +70,12 @@ void dimmer_change(char dimmerurl[15], int dimmerIDX, int dimmervalue, int puiss
             Serial.println(POWER_COMMAND + String(dimmervalue));
             }
         if (logging.power) {     logging.start += loguptime(); logging.start += POWER_COMMAND + String(dimmervalue) + "\r\n"; logging.power = false;}
+        if (puissance_dispo < 0) {
+          Serial.println("Puissance retiree   : " + String(-puissance_dispo));
+          }
+        else {
+          Serial.println("Puissance ajoutee   : " + String(puissance_dispo));
+        }
       }
       //// Mqtt send information
       #ifndef LIGHT_FIRMWARE
@@ -110,10 +116,16 @@ gDisplayValues.change = 0;
 
   // 0 -> linky ; 1-> injection  ; 2-> stabilisé
 
-// puissance dispo 
-puissance_dispo = -(gDisplayValues.watt-((config.delta+config.deltaneg)/2));
+  // puissance dispo 
+  puissance_dispo = -(gDisplayValues.watt-((config.delta+config.deltaneg)/2));
+  if (puissance_dispo < 0) {
+    Serial.println("Puissance consommee : " + String(-puissance_dispo));
+  }
+  else {
+    Serial.println("Puissance disponible: " + String(puissance_dispo));
+  }
 
-if ( gDisplayValues.dimmer != 0 && gDisplayValues.watt >= (config.delta) ) {
+  if ( gDisplayValues.dimmer != 0 && gDisplayValues.watt >= (config.delta) ) {
     //Serial.println("dimmer:" + String(gDisplayValues.dimmer));
     gDisplayValues.dimmer += -abs((gDisplayValues.watt-((config.delta+config.deltaneg)/2))*COMPENSATION/config.resistance); 
     

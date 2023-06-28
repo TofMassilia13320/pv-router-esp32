@@ -13,7 +13,7 @@ extern DisplayValues gDisplayValues;
 extern  Config config;
 extern dimmerLamp dimmer_hard; 
 
-extern SemaphoreHandle_t xSemaphore;
+extern SemaphoreHandle_t xSemaphoreDimmer;
 
 /**
  * Task: Modifier le dimmer en fonction de la production
@@ -40,7 +40,7 @@ void get_dimmer_child_power (){
             
             gDisplayValues.puissance_route = doc["Ptotal"];
   
-            Serial.println("Puissance routee: " + String(gDisplayValues.puissance_route));
+            Serial.println("Puissance routee    : " + String(gDisplayValues.puissance_route));
         }
         else {
             gDisplayValues.puissance_route = 0;
@@ -53,8 +53,14 @@ void get_dimmer_child_power (){
 void updateDimmer(void * parameter){
   for (;;){
     gDisplayValues.task = true;
-    // Wait for semaphore with 5s timeout
-    xSemaphoreTake(xSemaphore, pdMS_TO_TICKS(5000));
+    // Wait for semaphore or sleep for 5 seconds, avant de refaire une analyse
+    if (xSemaphoreDimmer == NULL) {
+        Serial.println("=>SEMAPHORE DIMMER NULL");
+        vTaskDelay(pdMS_TO_TICKS(4000));
+   }
+    else {
+        xSemaphoreTake(xSemaphoreDimmer, pdMS_TO_TICKS(4000));
+    }
 
 #if WIFI_ACTIVE == true
     #if CLEAN
