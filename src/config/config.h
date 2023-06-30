@@ -203,11 +203,11 @@ bool discovery_temp = false;
   //  #define ARDUINO_RUNNING_CORE 1
 #endif
 
-#define RELEASE "Version 20230620-Tof"
+#define RELEASE "20230630-Tof"
     #ifdef LIGHT_FIRMWARE
-        #define VERSION "Light " RELEASE
-        #else
-        #define VERSION RELEASE
+        #define VERSION "Version Light " RELEASE
+    #else
+        #define VERSION "Version " RELEASE
     #endif
 
 bool AP=true; 
